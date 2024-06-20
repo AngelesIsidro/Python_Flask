@@ -1,0 +1,84 @@
+# Creación del entorno y despliegue de aplicación en Web Server
+
+# Se prepara el LXC con los recursos básicos para poder ejecutar las tareas
+apt update && apt upgrade -y
+apt-get install net-tools openssh-server tar make gcc nano -y
+systemctl start ssh
+systemctl enable ssh
+systemctl status ssh
+
+# Se instalan los entornos para desplegar la aplicación
+apt install apache2 mysql-server -y
+
+# Se habilita el servicio de Apache Server
+systemctl start apache2
+systemctl enable apache2
+systemctl status apache2
+
+# Se habilita el servicio MySQL Server
+systemctl start mysql
+systemctl enable mysql
+systemctl status mysql
+sudo mysql_secure_installation
+
+# Asignar una contraseña a MySQL
+mysql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '12345678';
+FLUSH PRIVILEGES;
+exit;
+
+# Una vez asiganda la contraseña, se accede con el user root y se crea la BD
+mysql -u root -p
+CREATE DATABASE IF NOT EXISTS sociodemografico;
+EXIT;
+
+# Se descargan los archivos mediante un git clone desde el repositorio
+# Link GitHub: https://github.com/AngelesIsidro/Dashproject
+apt install git -y
+git clone https...
+
+# Ingresamos al directorio que contiene el archivo bash para poder ejecutarlo 
+cd /Dashproject/dbscripts/
+chmod +x importar_scripts.sh
+./importar_scripts.sh
+
+# Se ingresa la contraseña, luego se verifica la importación
+mysql -u root -p
+SHOW DATABASES;
+USE sociodemografico;
+SHOW TABLES;
+SELECT * FROM estadoescolaridad;
+EXIT;
+
+# Se prepara el entorno para desplegar Flask y Pyhton
+apt install libapache2-mod-wsgi-py3 -y
+python3 --version
+apt install python3-pip -y
+pip3 list
+sudo pip3 install flask
+pip3 list
+
+# Una vez descargados, se requiere que se mueva a la siguiente ruta el proyecto
+cd Dashproject
+mv dash_project /var/www/html
+cd /var/www/html/dash_project
+
+# Se instalan las siguientes dependencias para la creación de entornos virtuales
+apt install python3.8-venv
+apt install python3-dev
+pip3 install virtualenv
+
+# Se crea el entorno virutal llamado "venv" dentro de la carpeta del proyecto
+python3 -m venv venv
+
+# Se activa el entorno virtual y se instalan las dependencias para el proyecto
+source venv/bin/activate
+pip3 install wheel
+pip3 install dash
+pip3 install -r requirements.txt
+
+# Se crea un entorno de pruebas, en el cual, se exporta la aplicación llamada "app.py"
+export FLASK_APP=app.py
+
+# Se ejecuta el comando de Flask para correr de forma local el proyecto
+flask run --host=0.0.0.0
