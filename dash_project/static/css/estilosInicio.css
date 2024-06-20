@@ -1,0 +1,28 @@
+/* Contenedor del apartado inicio */
+#content-inicio{
+	padding: 19px;
+}
+
+/* Titulos: informacion*/
+.titles{
+	margin-bottom: 15px;
+}
+
+/* Subtitulos */
+.subtitle{
+	word-spacing: 2px;
+	margin-bottom: 11px;
+}
+
+/* El texto que tiene cada subtitulo */
+.sermones{
+    font-size: 16px;
+    line-height: 20px;
+    word-spacing: 1px;
+    margin-bottom: 24px;
+}
+
+
+
+
+

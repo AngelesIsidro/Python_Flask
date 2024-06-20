@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<title> 
+			{% block titulo %}
+
+			{% endblock %} | Proyecto Terminal 
+		</title>
+
+		<!-- Estilos CSS -->
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/estilosGlobales.css') }}"/> 
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/estilosInicio.css') }}"/> 
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/estilosCorrelacion.css') }}"/> 
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/estilosCaracteristicas.css') }}"/> 
+	</head>
+	<body>
+
+		<section id="global">
+
+			<!-- HEADER -->
+			<header>
+
+				<!-- Contenedor de imagenes -->
+				<div id="content-logos">
+					<span class="flotador" id="renglon1">&nbsp</span>
+					<span class="flotador" id="separadorImg1">&nbsp</span>
+					<img class="flotador" id="imgHeaderPol" src="{{ url_for('static', filename='img/ipnLogo.png') }}"/>             
+					<span class="flotador" id="separadorEntreImg">&nbsp</span>
+					<img class="flotador" id="imgHeaderUpiita" src="https://www.upiita.ipn.mx/images/logo_upiita_ipn_varios_colores_logo_upiita_oro.png" alt="imagen">  
+					
+					<div class="limpiador"></div>
+				</div>
+
+				<!-- Contenedor del titulo -->
+				<div class="color" id="content-titulo">
+					<h1>Impacto de variables sociodemográficas en cáncer usando técnicas de Ciencia de Datos</h1>
+				</div>
+
+				<!-- Contenedor del menu de navegacion -->
+				<nav id="menu">
+					<ul>
+						<li><a href="{{ url_for('inicio') }}">Inicio</a></li>
+						<li><a href="{{ url_for('correlacion') }}">Correlación</a></li>
+						<li><a href="{{ url_for('caracteristicas') }}">Características</a></li>
+						<li><a href="/dash">Aplicación</a></li>
+					</ul>
+				</nav>
+			</header>
+
+			{% block contenidoPagina %}
+
+            {% endblock %}
+		</section>
+		
+		<!-- FOOTER -->
+		<footer>
+			Derechos Reservados por Alejandro Granados &copy;
+		</footer>
+	</body>
+</html>
+
+
