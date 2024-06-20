@@ -3,82 +3,111 @@
 # Se prepara el LXC con los recursos básicos para poder ejecutar las tareas
 apt update && apt upgrade -y
 apt-get install net-tools openssh-server tar make gcc nano -y
+
+# Se habilita el servicio de SSH para la conexión por PuTTy
 systemctl start ssh
 systemctl enable ssh
 systemctl status ssh
 
+# Se crea el usuario con permisos de sudo
+adduser angsiserver
+usermod aG sudo angsiserver
+
 # Se instalan los entornos para desplegar la aplicación
-apt install apache2 mysql-server -y
+sudo apt install apache2 mysql-server libapache2-mod-wsgi-py3 -y
 
 # Se habilita el servicio de Apache Server
-systemctl start apache2
-systemctl enable apache2
-systemctl status apache2
+sudo systemctl start apache2
+sudo systemctl enable apache2
+sudo systemctl status apache2
 
 # Se habilita el servicio MySQL Server
-systemctl start mysql
-systemctl enable mysql
-systemctl status mysql
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo systemctl status mysql
 sudo mysql_secure_installation
 
 # Asignar una contraseña a MySQL
-mysql
+sudo mysql
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '12345678';
 FLUSH PRIVILEGES;
 exit;
 
 # Una vez asiganda la contraseña, se accede con el user root y se crea la BD
-mysql -u root -p
+sudo mysql -u root -p
 CREATE DATABASE IF NOT EXISTS sociodemografico;
 EXIT;
 
+# Se crea un usuario para el entorno de producción
+sudo mysql -u root -p
+CREATE USER 'angsiserver'@'localhost' IDENTIFIED BY '12345678';
+GRANT ALL PRIVILEGES ON sociodemografico.* TO angsiserver@localhost;
+FLUSH PRIVILEGES;
+EXIT;
+
 # Se descargan los archivos mediante un git clone desde el repositorio
-# Link GitHub: https://github.com/AngelesIsidro/Dashproject
-apt install git -y
+# Link GitHub: https://github.com/AngelesIsidro/Pythonflask
+sudo apt install git -y
 git clone https...
 
 # Ingresamos al directorio que contiene el archivo bash para poder ejecutarlo 
-cd /Dashproject/dbscripts/
-chmod +x importar_scripts.sh
+cd /Pythonflask/dbscripts
+sudo chmod +x importar_scripts.sh
 ./importar_scripts.sh
 
 # Se ingresa la contraseña, luego se verifica la importación
-mysql -u root -p
+sudo mysql -u root -p
 SHOW DATABASES;
 USE sociodemografico;
 SHOW TABLES;
 SELECT * FROM estadoescolaridad;
 EXIT;
 
-# Se prepara el entorno para desplegar Flask y Pyhton
-apt install libapache2-mod-wsgi-py3 -y
-python3 --version
-apt install python3-pip -y
-pip3 list
-sudo pip3 install flask
-pip3 list
+# Movemos el proyecto a la ruta de Apache y accedemos a ella
+sudo mv /Pythonflask/dash_project /var/www/
+sudo cd /var/www/dash_project
 
-# Una vez descargados, se requiere que se mueva a la siguiente ruta el proyecto
-cd Dashproject
-mv dash_project /var/www/html
-cd /var/www/html/dash_project
+# Se prepara el entorno para desplegar Flask y Pyhton
+python3 --version
+sudo apt install python3-pip -y
+pip3 list
 
 # Se instalan las siguientes dependencias para la creación de entornos virtuales
-apt install python3.8-venv
-apt install python3-dev
+sudo apt install python3.8-venv python3-dev
 pip3 install virtualenv
 
-# Se crea el entorno virutal llamado "venv" dentro de la carpeta del proyecto
+# Activamos el entorno virtual
 python3 -m venv venv
-
-# Se activa el entorno virtual y se instalan las dependencias para el proyecto
 source venv/bin/activate
-pip3 install wheel
-pip3 install dash
+pip3 install flask wheel dash
 pip3 install -r requirements.txt
+pip3 install mysql-connector-python
 
-# Se crea un entorno de pruebas, en el cual, se exporta la aplicación llamada "app.py"
-export FLASK_APP=app.py
+# Migramos la DB de MySQL a SQLite3, para un entorno de pruebas (opcional)
+sudo mkdir db_project
+cd /db_project
+sqlite3 sociodemografico.db
+pip3 install pandas sqlalchemy pymysql sqlite3
+cd ..
+sudo nano migrate.py
+python3 migrate.py
 
-# Se ejecuta el comando de Flask para correr de forma local el proyecto
-flask run --host=0.0.0.0
+# Ejecutamos la aplicación de Flask y probamos en el puerto 5000
+python3 project.py
+
+# Una vez ejecutada, realizamos el despliege mediante Apache
+deactivate
+cd /home/angsiserver/server_config
+sudo cp run.wsgi /var/www/dash_project
+
+# Nos movemos al directorio de Apache y realizamos un BackUp del archivo .conf
+sudo cd /etc/apache2/sites-available/
+sudo cp 000-default.conf buconf.conf
+
+# Copiamos el contenido del "000-default.conf"
+sudo nano 000-default.conf
+
+# Verificamos que no haya errores en Apache y reinciamos el servicio
+apachectl -t
+sudo systemctl restart apache2
+sudo systemctl status apache2
