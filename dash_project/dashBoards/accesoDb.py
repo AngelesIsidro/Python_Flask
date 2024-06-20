@@ -1,17 +1,20 @@
-import mysql.connector
-import os
+import sqlite3
+# import mysql.connector
+# import os
 # from dotenv import load_dotenv
+
+db_path = "/var/www/dash_project/db_project/sociodemografico.db"
 
 # Cargar variables de entorno desde el archivo .env
 # load_dotenv()
 
-# Configura la conexión (local)
-config = {
-    'user': 'root',
-    'password': '12345678',
-    'host': 'localhost',
-    'database': 'Sociodemografico',
-}
+# Configura la conexion (local)
+# config = {
+    # 'user': 'root',
+    # 'password': '12345678',
+    # 'host': 'localhost',
+    # 'database': 'sociodemografico',
+# }
 
 # Obtener las variables de entorno
 # db_user = os.getenv('MYSQLUSER')
@@ -20,12 +23,12 @@ config = {
 # db_name = os.getenv('MYSQLDATABASE')
 # db_port = os.getenv('MYSQLPORT')
 
-# Configura la conexión (nube)
+# Configura la conexion (nube)
 # Estos datos se quitaron por seguridad
 # config = {
 # }
 
-# Configurar la conexión con la base de datos
+# Configurar la conexion con la base de datos
 # config = {
 #     'user': db_user,
 #     'password': db_password,
@@ -63,7 +66,7 @@ def extraerClustersEstadoCancer():
 
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        conn = sqlite.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse los datos de estado con cancer
@@ -86,7 +89,7 @@ def extraerClustersEstadoCancer():
 
     except Exception as e:
         print(f'Error: {e}')
-        conn.rollback()
+        # conn.rollback()
 
     finally:
         # Cierra la conexión
@@ -101,7 +104,8 @@ def extraerClustersEstadoEducacion():
     
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+	# conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse los datos de estado con cancer
@@ -139,7 +143,8 @@ def extraerClustersEstadoOcupacion():
 
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        # conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse los datos de estado con cancer
@@ -193,7 +198,8 @@ def consultaBarras(parametro, numeroId):
 
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        # conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse los datos de estado con cancer
@@ -236,7 +242,8 @@ def consultaBarras(parametro, numeroId):
 def consultaTotal(numeroId):
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        # conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse los datos de estado con cancer
@@ -268,7 +275,8 @@ def consultaTotal(numeroId):
 def consultaEstados():
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        # conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse el nombre de todos los estados
@@ -300,7 +308,8 @@ def buscarIdEstado(nombreEstado):
     idEstado = None
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        # conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse el nombre de todos los estados
@@ -329,7 +338,8 @@ def buscarIdEstado(nombreEstado):
 def buscarNombreEstado(idEstado):
     try:
         # INTENTA ESTABLECER LA CONEXION
-        conn = mysql.connector.connect(**config)
+        # conn = mysql.connector.connect(**config)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Prepara la consulta para traerse el nombre de todos los estados
